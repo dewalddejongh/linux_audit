@@ -8,21 +8,18 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawnSync;
 var fs = require('fs');
 var logStream = fs.createWriteStream('./logFile.log', {flags: 'a'});
-var child;
-var result=[];
-
-
-
-
-
 
 var top = spawn("top", ["-bic"], {
     detatched:true,
     stdio:'ignore'
   });
+
 top.unref();
 top.stdout.on('data', (data) => {
   top.stdout.pipe(logStream);
+  setTimeout(() => {
+    top.kill('SIGHUP')
+  }, 500);
 
 });
 
@@ -32,12 +29,6 @@ top.on('close', function (code) {
 
 
   // keep the event loop busy
-
-
-setTimeout(() => {
-
-}, 20000);
-
 
 //TEST SCRIPT
 child=exec("top -icb", function(error, stdout, stderr){
